@@ -35,8 +35,13 @@ def build(bld):
 
     driver_source = bld.path.ant_glob([
         '*.c',
-        'port/src/*.c',
+        'port/src/npl_os_pebble.c',
     ])
+
+    if bld.env.bt_controller == 'cc2564x':
+        driver_source += [
+            'port/src/hci_uart_transport.c',
+        ]
 
     nimble_source_exclude = [
         'nimble/host/src/ble_gatts_lcl.c', # has a duplicate define, not needed anyway
