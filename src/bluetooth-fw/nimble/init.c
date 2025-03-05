@@ -28,7 +28,7 @@
 #include "pebble_errors.h"
 #include "semphr.h"
 #include "services/ans/ble_svc_ans.h"
-#include "services/dis/ble_svc_dis.h"
+//#include "services/dis/ble_svc_dis.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 #include "system/logging.h"
@@ -40,6 +40,7 @@ extern void pebble_pairing_service_init(void);
 
 void ble_store_ram_init(void);
 
+static TaskHandle_t s_ll_task_handle;
 static TaskHandle_t s_host_task_handle;
 static SemaphoreHandle_t s_host_started;
 static SemaphoreHandle_t s_host_stopped;
@@ -79,7 +80,15 @@ void bt_driver_init(void) {
   nimble_port_init();
   ble_store_ram_init();
 
-  TaskParameters_t task_params = {
+  TaskParameters_t ll_task_params = {
+    .pvTaskCode = nimble_port_ll_task_func,
+    .pcName = "NimbleController",
+    .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
+    .uxPriority = (configMAX_PRIORITIES - 1) | portPRIVILEGE_BIT,
+    .puxStackBuffer = NULL,
+  };
+
+  TaskParameters_t host_task_params = {
       .pvTaskCode = prv_host_task_main,
       .pcName = "NimbleHost",
       .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
@@ -87,23 +96,27 @@ void bt_driver_init(void) {
       .puxStackBuffer = NULL,
   };
 
-  pebble_task_create(PebbleTask_BTCallback, &task_params, &s_host_task_handle);
+  pebble_task_create(PebbleTask_BTRX, &ll_task_params, &s_ll_task_handle);
+  PBL_ASSERTN(s_ll_task_handle);
+
+  pebble_task_create(PebbleTask_BTCallback, &host_task_params, &s_host_task_handle);
   PBL_ASSERTN(s_host_task_handle);
 }
 
 bool bt_driver_start(BTDriverConfig *config) {
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "bt_driver_start");
 
+  /*
   s_dis_info = config->dis_info;
   ble_svc_dis_model_number_set(s_dis_info.model_number);
   ble_svc_dis_serial_number_set(s_dis_info.serial_number);
   ble_svc_dis_firmware_revision_set(s_dis_info.fw_revision);
   ble_svc_dis_software_revision_set(s_dis_info.sw_revision);
   ble_svc_dis_manufacturer_name_set(s_dis_info.manufacturer);
-
+  */
   ble_svc_gap_init();
   ble_svc_gatt_init();
-  ble_svc_dis_init();
+  //ble_svc_dis_init();
   pebble_pairing_service_init();
 
   ble_hs_sched_start();

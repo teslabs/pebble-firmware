@@ -34,12 +34,21 @@
 #include "task.h"
 #include "timers.h"
 
+#include "hal/hal_timer.h"
+#include "os/os_cputime.h"
+
 #define BLE_NPL_OS_ALIGNMENT 4
 
 #define BLE_NPL_TIME_FOREVER portMAX_DELAY
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+long   jrand48 (unsigned short [3]);
+
 typedef uint32_t ble_npl_time_t;
 typedef int32_t ble_npl_stime_t;
+
+extern int nrf52_clock_hfxo_request(void);
+extern int nrf52_clock_hfxo_release(void);
 
 struct ble_npl_event {
   bool queued;
@@ -184,7 +193,7 @@ static inline void ble_npl_time_delay(ble_npl_time_t ticks) { vTaskDelay(ticks);
 
 #if NIMBLE_CFG_CONTROLLER
 static inline void ble_npl_hw_set_isr(int irqn, void (*addr)(void)) {
-  npl_pebble_hw_set_isr(irqn, addr);
+  NVIC_SetVector(irqn, (uint32_t)addr);
 }
 #endif
 

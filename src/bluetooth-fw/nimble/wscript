@@ -11,6 +11,7 @@ def build(bld):
     nimble_root = bld.path.find_node('vendor/mynewt-nimble')
 
     include_dirs = [
+        f'port/include',
         f'{nimble_root}/nimble/include',
         f'{nimble_root}/nimble/host/include',
         f'{nimble_root}/nimble/host/services/ans/include',
@@ -19,7 +20,7 @@ def build(bld):
         f'{nimble_root}/nimble/host/services/gap/include',
         f'{nimble_root}/nimble/host/services/gatt/include',
         f'{nimble_root}/nimble/host/services/ias/include',
-        f'{nimble_root}/nimble/host/services/dis/include',
+        #f'{nimble_root}/nimble/host/services/dis/include',
         f'{nimble_root}/nimble/host/services/lls/include',
         f'{nimble_root}/nimble/host/services/tps/include',
         f'{nimble_root}/nimble/host/store/ram/include',
@@ -29,9 +30,14 @@ def build(bld):
         f'{nimble_root}/porting/nimble/include',
         f'{nimble_root}/ext/tinycrypt/include',
         f'chipset/include',
-        f'port/include',
         f'include',
     ]
+
+    if bld.env.bt_controller == 'nrf52':
+        include_dirs += [
+            f'{nimble_root}/nimble/drivers/nrf5x/include',
+            f'{nimble_root}/nimble/controller/include',
+        ]
 
     driver_source = bld.path.ant_glob([
         '*.c',
@@ -42,10 +48,13 @@ def build(bld):
         driver_source += [
             'port/src/hci_uart_transport.c',
         ]
+    elif bld.env.bt_controller == 'nrf52':
+        driver_source += [
+            'port/src/nrf52_clock.c',
+        ]
 
     nimble_source_exclude = [
         'nimble/host/src/ble_gatts_lcl.c', # has a duplicate define, not needed anyway
-        'porting/nimble/src/hal_timer.c',
     ]
     nimble_source_files = nimble_root.ant_glob(
         [
@@ -55,7 +64,7 @@ def build(bld):
             'nimble/host/util/src/*.c',
             'nimble/host/services/gap/src/*.c',
             'nimble/host/services/gatt/src/*.c',
-            'nimble/host/services/dis/src/*.c',
+            #'nimble/host/services/dis/src/*.c',
             'nimble/host/store/ram/src/*.c',
             'nimble/transport/src/*.c',
             'nimble/transport/common/hci_h4/src/*.c',
@@ -63,6 +72,15 @@ def build(bld):
         ],
         excl = nimble_source_exclude,
     )
+
+    if bld.env.bt_controller == 'nrf52':
+        nimble_source_files += nimble_root.ant_glob(
+            [
+               'nimble/controller/src/*.c',
+               'nimble/drivers/nrf5x/src/*.c',
+               'nimble/drivers/nrf5x/src/nrf52/*.c',
+            ],
+        )
 
     nimble_env = bld.env.derive()
     nimble_env.append_value('CFLAGS', [
@@ -72,27 +90,48 @@ def build(bld):
         '-Wno-old-style-declaration',
         '-Wimplicit-fallthrough=1',
     ])
-    nimble_env.append_value('DEFINES', [
-        'NIMBLE_BLE_SM=1',
-        'MYNEWT_VAL_BLE_SM_SC=1',
-        'MYNEWT_VAL_BLE_HS_AUTO_START=0',
-        'MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM=0',
-        'MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM=0',
-        'MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM=0',
-        'MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM=0',
-        'MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM=0',
-    ])
+
+    if bld.env.bt_controller == 'cc2564x':
+        nimble_env.append_value('DEFINES', [
+            'NIMBLE_BLE_SM=1',
+            'MYNEWT_VAL_BLE_SM_SC=1',
+            'MYNEWT_VAL_BLE_HS_AUTO_START=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM=0',
+        ])
+
+    if bld.env.bt_controller == 'nrf52':
+        nimble_env.append_value('DEFINES', [
+            '__XSI_VISIBLE=1',
+            'NIMBLE_CFG_CONTROLLER=1',
+            'MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_READ_PERM=0',
+            'MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_DEFAULT=0',
+        ])
+
+    nimble_use = [
+        'fw_includes',
+        'freertos',
+        'root_includes',
+        'bt_chipset_driver',
+    ]
+
+    if bld.env.bt_controller == 'nrf52':
+        nimble_use.append('hal_nordic')
 
     bld.objects(
         source=driver_source + nimble_source_files,
         target='bt_driver',
         defines=['FILE_LOG_COLOR=LOG_COLOR_BLUE'],
-        use=[
-          'fw_includes',
-          'freertos',
-          'root_includes',
-          'bt_chipset_driver',
-        ],
+        use=nimble_use,
         includes=include_dirs,
         env = nimble_env,
     )
