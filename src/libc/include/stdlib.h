@@ -57,3 +57,7 @@ void exit(int status) __attribute__((noreturn));
 // Not implemented, but included in the header to build the default platform.c of libs.
 void free(void *ptr);
 void *malloc(size_t bytes);
+
+void srand48(long seed);
+unsigned short int *seed48(unsigned short int seed16v[3]);
+long jrand48(unsigned short int s[3]);

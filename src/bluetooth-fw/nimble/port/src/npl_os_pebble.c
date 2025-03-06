@@ -30,6 +30,28 @@
 #include "system/logging.h"
 #include "system/passert.h"
 
+void (*radio_irq)(void) = NULL;
+void (*rtc0_irq)(void) = NULL;
+void (*rng_irq)(void) = NULL;
+
+void RADIO_IRQHandler(void) {
+  if (radio_irq) {
+    radio_irq();
+  }
+}
+
+void RTC0_IRQHandler(void) {
+  if (rtc0_irq) {
+    rtc0_irq();
+  }
+}
+
+void RNG_IRQHandler(void) {
+  if (rng_irq) {
+    rng_irq();
+  }
+}
+
 struct ble_npl_event *npl_pebble_eventq_get(struct ble_npl_eventq *evq, ble_npl_time_t tmo) {
   struct ble_npl_event *ev = NULL;
   BaseType_t woken;

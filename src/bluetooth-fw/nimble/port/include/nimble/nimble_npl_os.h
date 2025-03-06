@@ -50,6 +50,11 @@ typedef int32_t ble_npl_stime_t;
 extern int nrf52_clock_hfxo_request(void);
 extern int nrf52_clock_hfxo_release(void);
 
+static inline bool ble_npl_hw_is_in_critical(void)
+{
+  return vPortInCritical();
+}
+
 struct ble_npl_event {
   bool queued;
   ble_npl_event_fn *fn;
@@ -192,8 +197,24 @@ static inline uint32_t ble_npl_time_ticks_to_ms32(ble_npl_time_t ticks) { return
 static inline void ble_npl_time_delay(ble_npl_time_t ticks) { vTaskDelay(ticks); }
 
 #if NIMBLE_CFG_CONTROLLER
+extern void (*radio_irq)(void);
+extern void (*rtc0_irq)(void);
+extern void (*rng_irq)(void);
+
 static inline void ble_npl_hw_set_isr(int irqn, void (*addr)(void)) {
-  NVIC_SetVector(irqn, (uint32_t)addr);
+  switch (irqn) {
+    case RADIO_IRQn:
+      radio_irq = addr;
+      break;
+    case RTC0_IRQn:
+      rtc0_irq = addr;
+      break;
+    case RNG_IRQn:
+      rng_irq = addr;
+      break;
+    default:
+      WTF;
+  }
 }
 #endif
 

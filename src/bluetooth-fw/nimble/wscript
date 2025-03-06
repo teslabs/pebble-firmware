@@ -105,16 +105,7 @@ def build(bld):
 
     if bld.env.bt_controller == 'nrf52':
         nimble_env.append_value('DEFINES', [
-            '__XSI_VISIBLE=1',
             'NIMBLE_CFG_CONTROLLER=1',
-            'MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_READ_PERM=0',
-            'MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_DEFAULT=0',
         ])
 
     nimble_use = [

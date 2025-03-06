@@ -34,7 +34,7 @@
 #include "system/logging.h"
 #include "system/passert.h"
 
-static const uint32_t s_bt_stack_start_stop_timeout_ms = 500;
+static const uint32_t s_bt_stack_start_stop_timeout_ms = 2000;
 
 extern void pebble_pairing_service_init(void);
 
@@ -58,6 +58,8 @@ static void reset_cb(int reason) {
 static void prv_host_task_main(void *unused) {
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "BT host task started");
 
+  nimble_port_init();
+
   ble_hs_cfg.sync_cb = sync_cb;
   ble_hs_cfg.reset_cb = reset_cb;
   ble_hs_cfg.sm_our_key_dist |= BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
@@ -65,6 +67,17 @@ static void prv_host_task_main(void *unused) {
   ble_hs_cfg.sm_io_cap = BLE_SM_IO_CAP_NO_IO;
   ble_hs_cfg.sm_bonding = 1;
   ble_hs_cfg.sm_sc = 1;
+
+  TaskParameters_t ll_task_params = {
+    .pvTaskCode = nimble_port_ll_task_func,
+    .pcName = "NimbleController",
+    .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
+    .uxPriority = (tskIDLE_PRIORITY + 2) | portPRIVILEGE_BIT,
+    .puxStackBuffer = NULL,
+  };
+
+  pebble_task_create(PebbleTask_BTRX, &ll_task_params, &s_ll_task_handle);
+  PBL_ASSERTN(s_ll_task_handle);
 
   nimble_port_run();
 }
@@ -77,35 +90,22 @@ void bt_driver_init(void) {
   s_host_started = xSemaphoreCreateBinary();
   s_host_stopped = xSemaphoreCreateBinary();
 
-  nimble_port_init();
   ble_store_ram_init();
-
-  TaskParameters_t ll_task_params = {
-    .pvTaskCode = nimble_port_ll_task_func,
-    .pcName = "NimbleController",
-    .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
-    .uxPriority = (configMAX_PRIORITIES - 1) | portPRIVILEGE_BIT,
-    .puxStackBuffer = NULL,
-  };
-
-  TaskParameters_t host_task_params = {
-      .pvTaskCode = prv_host_task_main,
-      .pcName = "NimbleHost",
-      .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
-      .uxPriority = (tskIDLE_PRIORITY + 3) | portPRIVILEGE_BIT,
-      .puxStackBuffer = NULL,
-  };
-
-  pebble_task_create(PebbleTask_BTRX, &ll_task_params, &s_ll_task_handle);
-  PBL_ASSERTN(s_ll_task_handle);
-
-  pebble_task_create(PebbleTask_BTCallback, &host_task_params, &s_host_task_handle);
-  PBL_ASSERTN(s_host_task_handle);
 }
 
 bool bt_driver_start(BTDriverConfig *config) {
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "bt_driver_start");
 
+  TaskParameters_t host_task_params = {
+    .pvTaskCode = prv_host_task_main,
+    .pcName = "NimbleHost",
+    .usStackDepth = 4000 / sizeof(StackType_t),  // TODO: probably reduce this
+    .uxPriority = (tskIDLE_PRIORITY + 1) | portPRIVILEGE_BIT,
+    .puxStackBuffer = NULL,
+};
+
+  pebble_task_create(PebbleTask_BTCallback, &host_task_params, &s_host_task_handle);
+  PBL_ASSERTN(s_host_task_handle);
   /*
   s_dis_info = config->dis_info;
   ble_svc_dis_model_number_set(s_dis_info.model_number);
@@ -114,18 +114,21 @@ bool bt_driver_start(BTDriverConfig *config) {
   ble_svc_dis_software_revision_set(s_dis_info.sw_revision);
   ble_svc_dis_manufacturer_name_set(s_dis_info.manufacturer);
   */
-  ble_svc_gap_init();
-  ble_svc_gatt_init();
-  //ble_svc_dis_init();
-  pebble_pairing_service_init();
 
-  ble_hs_sched_start();
+
+  //ble_hs_sched_start();
   bool started = xSemaphoreTake(s_host_started,
-                                milliseconds_to_ticks(s_bt_stack_start_stop_timeout_ms)) == pdTRUE;
+    milliseconds_to_ticks(s_bt_stack_start_stop_timeout_ms)) == pdTRUE;
+
   if (!started) {
     PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_ERROR, "bt_driver_start timeout");
     return false;
   }
+
+  ble_svc_gap_init();
+  ble_svc_gatt_init();
+  //ble_svc_dis_init();
+  pebble_pairing_service_init();
 
   return true;
 }
