@@ -13,10 +13,11 @@
 # limitations under the License.
 
 syscfg.vals:
-    BLE_SM_SC: 1
     BLE_HS_AUTO_START: 0
     BLE_ROLE_BROADCASTER: 1
     BLE_ROLE_CENTRAL: 0
     BLE_ROLE_OBSERVER: 0
     BLE_ROLE_PERIPHERAL: 1
+    BLE_SM_SC: 1
     BLE_STORE_CONFIG_PERSIST: 0
+    BLE_SVC_DIS_DEFAULT_READ_PERM: 0
