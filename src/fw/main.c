@@ -510,6 +510,25 @@ static NOINLINE void prv_main_task_init(void) {
 }
 
 static void main_task(void *parameter) {
-  prv_main_task_init();
-  launcher_main_loop();
+  //prv_main_task_init();
+  //launcher_main_loop();
+
+  pebble_task_configure_idle_task();
+  task_init();
+  memory_layout_setup_mpu();
+  board_early_init();
+  new_timer_service_init();
+
+  dbgserial_input_init();
+  serial_console_init();
+
+  kernel_applib_init();
+  pulse_init();
+
+  bt_driver_init();
+
+  bt_driver_start(NULL);
+  while (1) {
+    vTaskDelay( 10000 / configTICK_RATE_HZ );
+  }
 }

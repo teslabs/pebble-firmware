@@ -166,8 +166,8 @@ Layer** kernel_applib_get_layer_tree_stack(void) {
 // -------------------------------------------------------------------------------------------------------------
 void kernel_applib_init(void) {
   s_log_state_mutex = mutex_create_recursive();
-  connection_service_state_init(kernel_applib_get_connection_service_state());
-  battery_state_service_state_init(kernel_applib_get_battery_state_service_state());
+  //connection_service_state_init(kernel_applib_get_connection_service_state());
+  //battery_state_service_state_init(kernel_applib_get_battery_state_service_state());
 }
 
 
