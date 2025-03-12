@@ -25,6 +25,15 @@
 #define MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_CORE "0.0.0"
 #endif
 
+/*** Repository @apache-mynewt-mcumgr info */
+#ifndef MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_MCUMGR
+#define MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_MCUMGR "95126ca7484c69fab0ffbbdf8ac54313105ee7e0"
+#endif
+
+#ifndef MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_MCUMGR
+#define MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_MCUMGR "0.0.0"
+#endif
+
 /*** Repository @apache-mynewt-nimble info */
 #ifndef MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_NIMBLE
 #define MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_NIMBLE "7b14eab3d07caffa3a70046271b9f5b805f5c965-dirty"
@@ -45,7 +54,7 @@
 
 /*** Repository @syscfg info */
 #ifndef MYNEWT_VAL_REPO_HASH_SYSCFG
-#define MYNEWT_VAL_REPO_HASH_SYSCFG "539158b54631f30621e7fa01752cd9e0851b8d2b-dirty"
+#define MYNEWT_VAL_REPO_HASH_SYSCFG "27c1395e7dd481b2c6fb701ec8f856039a33d9b8-dirty"
 #endif
 
 #ifndef MYNEWT_VAL_REPO_VERSION_SYSCFG
@@ -354,6 +363,15 @@
 #define MYNEWT_VAL_TINYCRYPT_UECC_RNG_USE_TRNG (0)
 #endif
 
+/*** @apache-mynewt-core/fs/fcb */
+#ifndef MYNEWT_VAL_FCB_BIDIRECTIONAL
+#define MYNEWT_VAL_FCB_BIDIRECTIONAL (0)
+#endif
+
+#ifndef MYNEWT_VAL_FCB_BIDIRECTIONAL_CACHE
+#define MYNEWT_VAL_FCB_BIDIRECTIONAL_CACHE (0)
+#endif
+
 /*** @apache-mynewt-core/hw/bsp/nordic_pca10056 */
 #ifndef MYNEWT_VAL_BSP_NRF52840
 #define MYNEWT_VAL_BSP_NRF52840 (1)
@@ -480,12 +498,11 @@
 #define MYNEWT_VAL_MCU_GPIO_USE_PORT_EVENT (0)
 #endif
 
-/* Overridden by targets/nrf52 (defined by @apache-mynewt-core/hw/mcu/nordic/nrf52xxx) */
 #ifndef MYNEWT_VAL_MCU_HFCLK_SOURCE__HFINT
-#define MYNEWT_VAL_MCU_HFCLK_SOURCE__HFINT (1)
+#define MYNEWT_VAL_MCU_HFCLK_SOURCE__HFINT (0)
 #endif
 #ifndef MYNEWT_VAL_MCU_HFCLK_SOURCE__HFXO
-#define MYNEWT_VAL_MCU_HFCLK_SOURCE__HFXO (0)
+#define MYNEWT_VAL_MCU_HFCLK_SOURCE__HFXO (1)
 #endif
 #ifndef MYNEWT_VAL_MCU_HFCLK_SOURCE
 #define MYNEWT_VAL_MCU_HFCLK_SOURCE (1)
@@ -1119,7 +1136,212 @@
 #define MYNEWT_VAL_BASELIBC_THREAD_SAFE_HEAP_ALLOCATION (0)
 #endif
 
-/*** @apache-mynewt-core/sys/console/stub */
+/*** @apache-mynewt-core/sys/config */
+#ifndef MYNEWT_VAL_CONFIG_AUTO_INIT
+#define MYNEWT_VAL_CONFIG_AUTO_INIT (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_CLI
+#define MYNEWT_VAL_CONFIG_CLI (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_CLI_DEBUG
+#define MYNEWT_VAL_CONFIG_CLI_DEBUG (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_CLI_RW
+#define MYNEWT_VAL_CONFIG_CLI_RW (3)
+#endif
+
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-core/sys/config) */
+#ifndef MYNEWT_VAL_CONFIG_FCB
+#define MYNEWT_VAL_CONFIG_FCB (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_FCB2
+#define MYNEWT_VAL_CONFIG_FCB2 (0)
+#endif
+
+/* Overridden by @apache-mynewt-core/hw/bsp/nordic_pca10056 (defined by @apache-mynewt-core/sys/config) */
+#ifndef MYNEWT_VAL_CONFIG_FCB_FLASH_AREA
+#define MYNEWT_VAL_CONFIG_FCB_FLASH_AREA (FLASH_AREA_NFFS)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_FCB_MAGIC
+#define MYNEWT_VAL_CONFIG_FCB_MAGIC (0xc0ffeeee)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_FCB_NUM_AREAS
+#define MYNEWT_VAL_CONFIG_FCB_NUM_AREAS (8)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_FLOAT_SUPPORT
+#define MYNEWT_VAL_CONFIG_FLOAT_SUPPORT (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_LITTLEFS
+#define MYNEWT_VAL_CONFIG_LITTLEFS (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_MAX_VAL_LEN
+#define MYNEWT_VAL_CONFIG_MAX_VAL_LEN (256)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_MGMT
+#define MYNEWT_VAL_CONFIG_MGMT (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_MGMT_RW
+#define MYNEWT_VAL_CONFIG_MGMT_RW (3)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_NFFS
+#define MYNEWT_VAL_CONFIG_NFFS (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_NO_DUP_CHECK
+#define MYNEWT_VAL_CONFIG_NO_DUP_CHECK (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_SYSINIT_STAGE_1
+#define MYNEWT_VAL_CONFIG_SYSINIT_STAGE_1 (50)
+#endif
+
+#ifndef MYNEWT_VAL_CONFIG_SYSINIT_STAGE_2
+#define MYNEWT_VAL_CONFIG_SYSINIT_STAGE_2 (220)
+#endif
+
+/*** @apache-mynewt-core/sys/console */
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-core/sys/console) */
+#ifndef MYNEWT_VAL_CONSOLE_IMPLEMENTATION__full
+#define MYNEWT_VAL_CONSOLE_IMPLEMENTATION__full (1)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_IMPLEMENTATION__minimal
+#define MYNEWT_VAL_CONSOLE_IMPLEMENTATION__minimal (0)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_IMPLEMENTATION__stub
+#define MYNEWT_VAL_CONSOLE_IMPLEMENTATION__stub (0)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_IMPLEMENTATION
+#define MYNEWT_VAL_CONSOLE_IMPLEMENTATION (1)
+#endif
+
+#undef MYNEWT_VAL_CONSOLE_MODE
+
+/*** @apache-mynewt-core/sys/console/full */
+#ifndef MYNEWT_VAL_CONSOLE_BLE_MONITOR
+#define MYNEWT_VAL_CONSOLE_BLE_MONITOR (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_COMPAT
+#define MYNEWT_VAL_CONSOLE_COMPAT (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_DEFAULT_LOCK_TIMEOUT
+#define MYNEWT_VAL_CONSOLE_DEFAULT_LOCK_TIMEOUT (1000)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_ECHO
+#define MYNEWT_VAL_CONSOLE_ECHO (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY__log
+#define MYNEWT_VAL_CONSOLE_HISTORY__log (0)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY__none
+#define MYNEWT_VAL_CONSOLE_HISTORY__none (1)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY__ram
+#define MYNEWT_VAL_CONSOLE_HISTORY__ram (0)
+#endif
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY
+#define MYNEWT_VAL_CONSOLE_HISTORY (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY_AUTO_SEARCH
+#define MYNEWT_VAL_CONSOLE_HISTORY_AUTO_SEARCH (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_HISTORY_SIZE
+#define MYNEWT_VAL_CONSOLE_HISTORY_SIZE (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_INPUT
+#define MYNEWT_VAL_CONSOLE_INPUT (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_MAX_INPUT_LEN
+#define MYNEWT_VAL_CONSOLE_MAX_INPUT_LEN (256)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_NLIP_RESTORE_ECHO
+#define MYNEWT_VAL_CONSOLE_NLIP_RESTORE_ECHO (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_PROMPT_HIDE_CURSOR_IN_LOG_AREA
+#define MYNEWT_VAL_CONSOLE_PROMPT_HIDE_CURSOR_IN_LOG_AREA (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_PROMPT_MAX_LEN
+#define MYNEWT_VAL_CONSOLE_PROMPT_MAX_LEN (16)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_PROMPT_SOFT_CURSOR
+#define MYNEWT_VAL_CONSOLE_PROMPT_SOFT_CURSOR (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_PROMPT_SOFT_CURSOR_ATTR
+#define MYNEWT_VAL_CONSOLE_PROMPT_SOFT_CURSOR_ATTR "7m"
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_PROMPT_STICKY
+#define MYNEWT_VAL_CONSOLE_PROMPT_STICKY (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_RTT
+#define MYNEWT_VAL_CONSOLE_RTT (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_RTT_INPUT_POLL_INTERVAL_MAX
+#define MYNEWT_VAL_CONSOLE_RTT_INPUT_POLL_INTERVAL_MAX (250)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_RTT_RETRY_COUNT
+#define MYNEWT_VAL_CONSOLE_RTT_RETRY_COUNT (2)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_RTT_RETRY_DELAY_MS
+#define MYNEWT_VAL_CONSOLE_RTT_RETRY_DELAY_MS (2)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_RTT_RETRY_IN_ISR
+#define MYNEWT_VAL_CONSOLE_RTT_RETRY_IN_ISR (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_SEMIHOSTING
+#define MYNEWT_VAL_CONSOLE_SEMIHOSTING (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_SEMIHOSTING_TX_BUF_SIZE
+#define MYNEWT_VAL_CONSOLE_SEMIHOSTING_TX_BUF_SIZE (128)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_SYSINIT_STAGE
+#define MYNEWT_VAL_CONSOLE_SYSINIT_STAGE (20)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_TCP
+#define MYNEWT_VAL_CONSOLE_TCP (0)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_TICKS
+#define MYNEWT_VAL_CONSOLE_TICKS (1)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_UART
+#define MYNEWT_VAL_CONSOLE_UART (1)
+#endif
+
 #ifndef MYNEWT_VAL_CONSOLE_UART_BAUD
 #define MYNEWT_VAL_CONSOLE_UART_BAUD (115200)
 #endif
@@ -1130,6 +1352,18 @@
 
 #ifndef MYNEWT_VAL_CONSOLE_UART_FLOW_CONTROL
 #define MYNEWT_VAL_CONSOLE_UART_FLOW_CONTROL (UART_FLOW_CTL_NONE)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_UART_RX_BUF_SIZE
+#define MYNEWT_VAL_CONSOLE_UART_RX_BUF_SIZE (32)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_UART_TX_BUF_SIZE
+#define MYNEWT_VAL_CONSOLE_UART_TX_BUF_SIZE (32)
+#endif
+
+#ifndef MYNEWT_VAL_CONSOLE_USB
+#define MYNEWT_VAL_CONSOLE_USB (0)
 #endif
 
 /*** @apache-mynewt-core/sys/flash_map */
@@ -1145,6 +1379,59 @@
 #define MYNEWT_VAL_FLASH_MAP_SYSINIT_STAGE (9)
 #endif
 
+/*** @apache-mynewt-core/sys/id */
+#ifndef MYNEWT_VAL_ID_MANUFACTURER_LOCAL
+#define MYNEWT_VAL_ID_MANUFACTURER_LOCAL (0)
+#endif
+
+#ifndef MYNEWT_VAL_ID_MANUFACTURER_PRESENT
+#define MYNEWT_VAL_ID_MANUFACTURER_PRESENT (0)
+#endif
+
+#ifndef MYNEWT_VAL_ID_MODEL_LOCAL
+#define MYNEWT_VAL_ID_MODEL_LOCAL (0)
+#endif
+
+#ifndef MYNEWT_VAL_ID_MODEL_PRESENT
+#define MYNEWT_VAL_ID_MODEL_PRESENT (0)
+#endif
+
+#ifndef MYNEWT_VAL_ID_SERIAL_MAX_LEN
+#define MYNEWT_VAL_ID_SERIAL_MAX_LEN (64)
+#endif
+
+#ifndef MYNEWT_VAL_ID_SERIAL_MFG_MAX_LEN
+#define MYNEWT_VAL_ID_SERIAL_MFG_MAX_LEN (32)
+#endif
+
+#ifndef MYNEWT_VAL_ID_SERIAL_MFG_PRESENT
+#define MYNEWT_VAL_ID_SERIAL_MFG_PRESENT (0)
+#endif
+
+#ifndef MYNEWT_VAL_ID_SERIAL_PRESENT
+#define MYNEWT_VAL_ID_SERIAL_PRESENT (1)
+#endif
+
+#ifndef MYNEWT_VAL_ID_SYSINIT_STAGE
+#define MYNEWT_VAL_ID_SYSINIT_STAGE (500)
+#endif
+
+#ifndef MYNEWT_VAL_ID_TARGET_PRESENT
+#define MYNEWT_VAL_ID_TARGET_PRESENT (0)
+#endif
+
+/*** @apache-mynewt-core/sys/log */
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-core/sys/log) */
+#ifndef MYNEWT_VAL_LOG_IMPLEMENTATION__full
+#define MYNEWT_VAL_LOG_IMPLEMENTATION__full (1)
+#endif
+#ifndef MYNEWT_VAL_LOG_IMPLEMENTATION__stub
+#define MYNEWT_VAL_LOG_IMPLEMENTATION__stub (0)
+#endif
+#ifndef MYNEWT_VAL_LOG_IMPLEMENTATION
+#define MYNEWT_VAL_LOG_IMPLEMENTATION (1)
+#endif
+
 /*** @apache-mynewt-core/sys/log/common */
 #ifndef MYNEWT_VAL_DFLT_LOG_LVL
 #define MYNEWT_VAL_DFLT_LOG_LVL (1)
@@ -1156,6 +1443,121 @@
 
 #ifndef MYNEWT_VAL_LOG_GLOBAL_IDX
 #define MYNEWT_VAL_LOG_GLOBAL_IDX (1)
+#endif
+
+/*** @apache-mynewt-core/sys/log/full */
+#ifndef MYNEWT_VAL_LOG_CLI
+#define MYNEWT_VAL_LOG_CLI (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_CLI_FILL_CMD
+#define MYNEWT_VAL_LOG_CLI_FILL_CMD (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_CONSOLE
+#define MYNEWT_VAL_LOG_CONSOLE (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_CONSOLE_PRETTY
+#define MYNEWT_VAL_LOG_CONSOLE_PRETTY (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_CONSOLE_PRETTY_COLOR_MODULES
+#define MYNEWT_VAL_LOG_CONSOLE_PRETTY_COLOR_MODULES (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_CONSOLE_PRETTY_WITH_COLORS
+#define MYNEWT_VAL_LOG_CONSOLE_PRETTY_WITH_COLORS (0)
+#endif
+
+/* Overridden by @apache-mynewt-core/sys/log/full (defined by @apache-mynewt-core/sys/log/full) */
+#ifndef MYNEWT_VAL_LOG_CONSOLE_PRETTY_WITH_TIMESTAMP
+#define MYNEWT_VAL_LOG_CONSOLE_PRETTY_WITH_TIMESTAMP (0)
+#endif
+
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-core/sys/log/full) */
+#ifndef MYNEWT_VAL_LOG_FCB
+#define MYNEWT_VAL_LOG_FCB (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_FCB2
+#define MYNEWT_VAL_LOG_FCB2 (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_FCB_BOOKMARKS
+#define MYNEWT_VAL_LOG_FCB_BOOKMARKS (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_FCB_COPY_MAX_ENTRY_LEN
+#define MYNEWT_VAL_LOG_FCB_COPY_MAX_ENTRY_LEN (256)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_FLAGS_IMAGE_HASH
+#define MYNEWT_VAL_LOG_FLAGS_IMAGE_HASH (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_FULL
+#define MYNEWT_VAL_LOG_FULL (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_LEVEL
+#define MYNEWT_VAL_LOG_LEVEL (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_MAX_USER_MODULES
+#define MYNEWT_VAL_LOG_MAX_USER_MODULES (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_MGMT
+#define MYNEWT_VAL_LOG_MGMT (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_MODULE_LEVELS
+#define MYNEWT_VAL_LOG_MODULE_LEVELS (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_NEWTMGR
+#define MYNEWT_VAL_LOG_NEWTMGR (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_NMGR_MAX_RSP_LEN
+#define MYNEWT_VAL_LOG_NMGR_MAX_RSP_LEN (400)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_PERSIST_WATERMARK
+#define MYNEWT_VAL_LOG_PERSIST_WATERMARK (1)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_READ_WATERMARK_UPDATE
+#define MYNEWT_VAL_LOG_READ_WATERMARK_UPDATE (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_SEQUENTIAL_IDX
+#define MYNEWT_VAL_LOG_SEQUENTIAL_IDX (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_SHELL_SHOW_INDEX
+#define MYNEWT_VAL_LOG_SHELL_SHOW_INDEX (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_STATS
+#define MYNEWT_VAL_LOG_STATS (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_STORAGE_INFO
+#define MYNEWT_VAL_LOG_STORAGE_INFO (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_STORAGE_WATERMARK
+#define MYNEWT_VAL_LOG_STORAGE_WATERMARK (0)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_SYSINIT_STAGE_MAIN
+#define MYNEWT_VAL_LOG_SYSINIT_STAGE_MAIN (100)
+#endif
+
+#ifndef MYNEWT_VAL_LOG_VERSION
+#define MYNEWT_VAL_LOG_VERSION (3)
 #endif
 
 /*** @apache-mynewt-core/sys/log/modlog */
@@ -1179,21 +1581,74 @@
 #define MYNEWT_VAL_MODLOG_SYSINIT_STAGE (100)
 #endif
 
-/*** @apache-mynewt-core/sys/log/stub */
-#ifndef MYNEWT_VAL_LOG_CONSOLE
-#define MYNEWT_VAL_LOG_CONSOLE (1)
+/*** @apache-mynewt-core/sys/mfg */
+#ifndef MYNEWT_VAL_MFG_LOG_LVL
+#define MYNEWT_VAL_MFG_LOG_LVL (15)
 #endif
 
-#ifndef MYNEWT_VAL_LOG_FCB
-#define MYNEWT_VAL_LOG_FCB (0)
+#ifndef MYNEWT_VAL_MFG_LOG_MODULE
+#define MYNEWT_VAL_MFG_LOG_MODULE (128)
 #endif
 
-#ifndef MYNEWT_VAL_LOG_FCB_SLOT1
-#define MYNEWT_VAL_LOG_FCB_SLOT1 (0)
+#ifndef MYNEWT_VAL_MFG_MAX_MMRS
+#define MYNEWT_VAL_MFG_MAX_MMRS (2)
 #endif
 
-#ifndef MYNEWT_VAL_LOG_LEVEL
-#define MYNEWT_VAL_LOG_LEVEL (255)
+#ifndef MYNEWT_VAL_MFG_SYSINIT_STAGE
+#define MYNEWT_VAL_MFG_SYSINIT_STAGE (100)
+#endif
+
+/*** @apache-mynewt-core/sys/stats */
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-core/sys/stats) */
+#ifndef MYNEWT_VAL_STATS_IMPLEMENTATION__full
+#define MYNEWT_VAL_STATS_IMPLEMENTATION__full (1)
+#endif
+#ifndef MYNEWT_VAL_STATS_IMPLEMENTATION__stub
+#define MYNEWT_VAL_STATS_IMPLEMENTATION__stub (0)
+#endif
+#ifndef MYNEWT_VAL_STATS_IMPLEMENTATION
+#define MYNEWT_VAL_STATS_IMPLEMENTATION (1)
+#endif
+
+/*** @apache-mynewt-core/sys/stats/full */
+#ifndef MYNEWT_VAL_STATS_CLI
+#define MYNEWT_VAL_STATS_CLI (0)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_MGMT
+#define MYNEWT_VAL_STATS_MGMT (0)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_NAMES
+#define MYNEWT_VAL_STATS_NAMES (0)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_NEWTMGR
+#define MYNEWT_VAL_STATS_NEWTMGR (0)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_PERSIST
+#define MYNEWT_VAL_STATS_PERSIST (0)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_PERSIST_BUF_SIZE
+#define MYNEWT_VAL_STATS_PERSIST_BUF_SIZE (128)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_PERSIST_MAX_NAME_SIZE
+#define MYNEWT_VAL_STATS_PERSIST_MAX_NAME_SIZE (32)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_SYSDOWN_STAGE
+#define MYNEWT_VAL_STATS_SYSDOWN_STAGE (500)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_SYSINIT_STAGE
+#define MYNEWT_VAL_STATS_SYSINIT_STAGE (10)
+#endif
+
+#ifndef MYNEWT_VAL_STATS_SYSINIT_STAGE_CONF
+#define MYNEWT_VAL_STATS_SYSINIT_STAGE_CONF (51)
 #endif
 
 /*** @apache-mynewt-core/sys/sys */
@@ -1231,9 +1686,19 @@
 #define MYNEWT_VAL_SYSINIT_PANIC_MESSAGE (0)
 #endif
 
+/*** @apache-mynewt-core/util/crc */
+#ifndef MYNEWT_VAL_UTIL_CRC_CRC16_CCITT_USE_TABLE
+#define MYNEWT_VAL_UTIL_CRC_CRC16_CCITT_USE_TABLE (1)
+#endif
+
 /*** @apache-mynewt-core/util/rwlock */
 #ifndef MYNEWT_VAL_RWLOCK_DEBUG
 #define MYNEWT_VAL_RWLOCK_DEBUG (0)
+#endif
+
+/*** @apache-mynewt-mcumgr/cborattr */
+#ifndef MYNEWT_VAL_CBORATTR_MAX_SIZE
+#define MYNEWT_VAL_CBORATTR_MAX_SIZE (512)
 #endif
 
 /*** @apache-mynewt-nimble/nimble */
@@ -1314,18 +1779,22 @@
 #define MYNEWT_VAL_BLE_POWER_CONTROL (0)
 #endif
 
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble) */
 #ifndef MYNEWT_VAL_BLE_ROLE_BROADCASTER
 #define MYNEWT_VAL_BLE_ROLE_BROADCASTER (1)
 #endif
 
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble) */
 #ifndef MYNEWT_VAL_BLE_ROLE_CENTRAL
-#define MYNEWT_VAL_BLE_ROLE_CENTRAL (1)
+#define MYNEWT_VAL_BLE_ROLE_CENTRAL (0)
 #endif
 
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble) */
 #ifndef MYNEWT_VAL_BLE_ROLE_OBSERVER
-#define MYNEWT_VAL_BLE_ROLE_OBSERVER (1)
+#define MYNEWT_VAL_BLE_ROLE_OBSERVER (0)
 #endif
 
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble) */
 #ifndef MYNEWT_VAL_BLE_ROLE_PERIPHERAL
 #define MYNEWT_VAL_BLE_ROLE_PERIPHERAL (1)
 #endif
@@ -1703,8 +2172,9 @@
 #define MYNEWT_VAL_BLE_LL_PRIO (0)
 #endif
 
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble/controller) */
 #ifndef MYNEWT_VAL_BLE_LL_PUBLIC_DEV_ADDR
-#define MYNEWT_VAL_BLE_LL_PUBLIC_DEV_ADDR (0x000000000000)
+#define MYNEWT_VAL_BLE_LL_PUBLIC_DEV_ADDR (0x1122aabb33cc)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_LL_RESOLV_LIST_SIZE
@@ -1727,12 +2197,12 @@
 
 /* Value copied from BLE_ROLE_CENTRAL */
 #ifndef MYNEWT_VAL_BLE_LL_ROLE_CENTRAL
-#define MYNEWT_VAL_BLE_LL_ROLE_CENTRAL (1)
+#define MYNEWT_VAL_BLE_LL_ROLE_CENTRAL (0)
 #endif
 
 /* Value copied from BLE_ROLE_OBSERVER */
 #ifndef MYNEWT_VAL_BLE_LL_ROLE_OBSERVER
-#define MYNEWT_VAL_BLE_LL_ROLE_OBSERVER (1)
+#define MYNEWT_VAL_BLE_LL_ROLE_OBSERVER (0)
 #endif
 
 /* Value copied from BLE_ROLE_PERIPHERAL */
@@ -2059,7 +2529,6 @@
 #define MYNEWT_VAL_BLE_HOST (1)
 #endif
 
-/* Overridden by app (defined by @apache-mynewt-nimble/nimble/host) */
 #ifndef MYNEWT_VAL_BLE_HS_AUTO_START
 #define MYNEWT_VAL_BLE_HS_AUTO_START (0)
 #endif
@@ -2208,9 +2677,8 @@
 #define MYNEWT_VAL_BLE_SM_OUR_KEY_DIST (0)
 #endif
 
-/* Overridden by app (defined by @apache-mynewt-nimble/nimble/host) */
 #ifndef MYNEWT_VAL_BLE_SM_SC
-#define MYNEWT_VAL_BLE_SM_SC (1)
+#define MYNEWT_VAL_BLE_SM_SC (0)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS
@@ -2231,78 +2699,6 @@
 
 #ifndef MYNEWT_VAL_BLE_STORE_MAX_CCCDS
 #define MYNEWT_VAL_BLE_STORE_MAX_CCCDS (8)
-#endif
-
-/*** @apache-mynewt-nimble/nimble/host/services/dis */
-/* Overridden by app (defined by @apache-mynewt-nimble/nimble/host/services/dis) */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_DEFAULT_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_DEFAULT_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_FIRMWARE_REVISION_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_HARDWARE_REVISION_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_MANUFACTURER_NAME_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_DEFAULT "Apache Mynewt NimBLE"
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_MODEL_NUMBER_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_SERIAL_NUMBER_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_SOFTWARE_REVISION_READ_PERM (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SYSINIT_STAGE
-#define MYNEWT_VAL_BLE_SVC_DIS_SYSINIT_STAGE (303)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_DEFAULT
-#define MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_DEFAULT (NULL)
-#endif
-
-/* Value copied from BLE_SVC_DIS_DEFAULT_READ_PERM */
-#ifndef MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_READ_PERM
-#define MYNEWT_VAL_BLE_SVC_DIS_SYSTEM_ID_READ_PERM (0)
 #endif
 
 /*** @apache-mynewt-nimble/nimble/host/services/gap */
@@ -2353,6 +2749,16 @@
 /*** @apache-mynewt-nimble/nimble/host/services/gatt */
 #ifndef MYNEWT_VAL_BLE_SVC_GATT_SYSINIT_STAGE
 #define MYNEWT_VAL_BLE_SVC_GATT_SYSINIT_STAGE (302)
+#endif
+
+/*** @apache-mynewt-nimble/nimble/host/store/config */
+/* Overridden by @apache-mynewt-nimble/apps/blehr (defined by @apache-mynewt-nimble/nimble/host/store/config) */
+#ifndef MYNEWT_VAL_BLE_STORE_CONFIG_PERSIST
+#define MYNEWT_VAL_BLE_STORE_CONFIG_PERSIST (0)
+#endif
+
+#ifndef MYNEWT_VAL_BLE_STORE_SYSINIT_STAGE
+#define MYNEWT_VAL_BLE_STORE_SYSINIT_STAGE (500)
 #endif
 
 /*** @apache-mynewt-nimble/nimble/transport */
@@ -2643,11 +3049,11 @@
 
 /*** newt */
 #ifndef MYNEWT_VAL_APP_NAME
-#define MYNEWT_VAL_APP_NAME "app"
+#define MYNEWT_VAL_APP_NAME "blehr"
 #endif
 
-#ifndef MYNEWT_VAL_APP_app
-#define MYNEWT_VAL_APP_app (1)
+#ifndef MYNEWT_VAL_APP_blehr
+#define MYNEWT_VAL_APP_blehr (1)
 #endif
 
 #ifndef MYNEWT_VAL_ARCH_NAME
@@ -2675,11 +3081,11 @@
 #endif
 
 #ifndef MYNEWT_VAL_TARGET_NAME
-#define MYNEWT_VAL_TARGET_NAME "nrf52"
+#define MYNEWT_VAL_TARGET_NAME "test"
 #endif
 
-#ifndef MYNEWT_VAL_TARGET_nrf52
-#define MYNEWT_VAL_TARGET_nrf52 (1)
+#ifndef MYNEWT_VAL_TARGET_test
+#define MYNEWT_VAL_TARGET_test (1)
 #endif
 
 /*** Included packages */
@@ -2687,6 +3093,9 @@
 #define MYNEWT_PKG_apache_mynewt_core__compiler_arm_none_eabi_m4 1
 #define MYNEWT_PKG_apache_mynewt_core__crypto_mbedtls 1
 #define MYNEWT_PKG_apache_mynewt_core__crypto_tinycrypt 1
+#define MYNEWT_PKG_apache_mynewt_core__encoding_base64 1
+#define MYNEWT_PKG_apache_mynewt_core__encoding_tinycbor 1
+#define MYNEWT_PKG_apache_mynewt_core__fs_fcb 1
 #define MYNEWT_PKG_apache_mynewt_core__hw_bsp_nordic_pca10056 1
 #define MYNEWT_PKG_apache_mynewt_core__hw_cmsis_core 1
 #define MYNEWT_PKG_apache_mynewt_core__hw_drivers_uart 1
@@ -2700,32 +3109,41 @@
 #define MYNEWT_PKG_apache_mynewt_core__libc 1
 #define MYNEWT_PKG_apache_mynewt_core__libc_baselibc 1
 #define MYNEWT_PKG_apache_mynewt_core__mgmt_image_header 1
-#define MYNEWT_PKG_apache_mynewt_core__sys_console_stub 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_config 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_console 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_console_full 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_defs 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_flash_map 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_id 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_log 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_log_common 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_log_full 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_log_modlog 1
-#define MYNEWT_PKG_apache_mynewt_core__sys_log_stub 1
-#define MYNEWT_PKG_apache_mynewt_core__sys_stats_stub 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_mfg 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_stats 1
+#define MYNEWT_PKG_apache_mynewt_core__sys_stats_full 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_sys 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_sysdown 1
 #define MYNEWT_PKG_apache_mynewt_core__sys_sysinit 1
+#define MYNEWT_PKG_apache_mynewt_core__util_cbmem 1
+#define MYNEWT_PKG_apache_mynewt_core__util_crc 1
 #define MYNEWT_PKG_apache_mynewt_core__util_mem 1
 #define MYNEWT_PKG_apache_mynewt_core__util_rwlock 1
+#define MYNEWT_PKG_apache_mynewt_mcumgr__cborattr 1
+#define MYNEWT_PKG_apache_mynewt_nimble__apps_blehr 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_controller 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_drivers_nrf5x 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_host 1
-#define MYNEWT_PKG_apache_mynewt_nimble__nimble_host_services_dis 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_host_services_gap 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_host_services_gatt 1
+#define MYNEWT_PKG_apache_mynewt_nimble__nimble_host_store_config 1
 #define MYNEWT_PKG_apache_mynewt_nimble__nimble_transport 1
 #define MYNEWT_PKG_apache_mynewt_nimble__porting_npl_mynewt 1
 #define MYNEWT_PKG_mcuboot__boot_bootutil 1
 #define MYNEWT_PKG_mcuboot__boot_mynewt_flash_map_backend 1
 #define MYNEWT_PKG_mcuboot__boot_mynewt_mcuboot_config 1
-#define MYNEWT_PKG_syscfg__app 1
-#define MYNEWT_PKG_syscfg__targets_nrf52 1
+#define MYNEWT_PKG_syscfg__targets_test 1
 
 /*** Included APIs */
 #define MYNEWT_API_ble_driver 1
