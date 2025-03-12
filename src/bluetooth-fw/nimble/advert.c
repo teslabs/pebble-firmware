@@ -20,10 +20,12 @@
 #include "system/logging.h"
 
 void bt_driver_advert_advertising_disable(void) {
+  /*
   int rc = ble_gap_adv_stop();
   if (rc != 0) {
     PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_ERROR, "bt_driver_advert_advertising_disable err: %d", rc);
   }
+  */
 }
 
 // no impl needed for nimble, buggy stack workaround
@@ -32,15 +34,18 @@ bool bt_driver_advert_is_connectable(void) { return true; }
 bool bt_driver_advert_client_get_tx_power(int8_t *tx_power) { return false; }
 
 void bt_driver_advert_set_advertising_data(const BLEAdData *ad_data) {
+  /*
   int rc = ble_gap_adv_set_data((uint8_t *)&ad_data->data, ad_data->ad_data_length);
   PBL_ASSERTN(rc == 0);
   rc = ble_gap_adv_rsp_set_data((uint8_t *)&ad_data->data[ad_data->ad_data_length],
                                 ad_data->scan_resp_data_length);
   PBL_ASSERTN(rc == 0);
+  */
 }
 
 bool bt_driver_advert_advertising_enable(uint32_t min_interval_ms, uint32_t max_interval_ms,
                                          bool enable_scan_resp) {
+  /*
   int rc;
   uint8_t own_addr_type;
   struct ble_gap_adv_params advp = {
@@ -55,6 +60,8 @@ bool bt_driver_advert_advertising_enable(uint32_t min_interval_ms, uint32_t max_
 
   rc = ble_gap_adv_start(own_addr_type, NULL, BLE_HS_FOREVER, &advp, NULL, NULL);
   return rc == 0;
+  */
+  return true;
 }
 
 bool bt_driver_advert_client_has_cycled(void) { return false; }

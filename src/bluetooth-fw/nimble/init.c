@@ -48,8 +48,11 @@ static SemaphoreHandle_t s_host_started;
 static SemaphoreHandle_t s_host_stopped;
 static DisInfo s_dis_info;
 
+extern void blehr_on_sync(void);
+
 static void sync_cb(void) {
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "BT sync_cb");
+  blehr_on_sync();
   xSemaphoreGive(s_host_started);
 }
 
@@ -61,13 +64,14 @@ static void prv_host_task_main(void *unused) {
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "BT host task started");
 
   ble_hs_cfg.sync_cb = sync_cb;
+  /*
   ble_hs_cfg.reset_cb = reset_cb;
   ble_hs_cfg.sm_our_key_dist |= BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
   ble_hs_cfg.sm_their_key_dist |= BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
   ble_hs_cfg.sm_io_cap = BLE_SM_IO_CAP_NO_IO;
   ble_hs_cfg.sm_bonding = 1;
   ble_hs_cfg.sm_sc = 1;
-
+  */
   nimble_port_run();
 }
 
@@ -107,22 +111,28 @@ void bt_driver_init(void) {
 #endif
 }
 
+extern int hrinit(void);
+
 bool bt_driver_start(BTDriverConfig *config) {
   int rc;
 
   PBL_LOG_D(LOG_DOMAIN_BT, LOG_LEVEL_INFO, "bt_driver_start");
 
+  /*
   s_dis_info = config->dis_info;
   ble_svc_dis_model_number_set(s_dis_info.model_number);
   ble_svc_dis_serial_number_set(s_dis_info.serial_number);
   ble_svc_dis_firmware_revision_set(s_dis_info.fw_revision);
   ble_svc_dis_software_revision_set(s_dis_info.sw_revision);
   ble_svc_dis_manufacturer_name_set(s_dis_info.manufacturer);
+  */
 
   ble_svc_gap_init();
   ble_svc_gatt_init();
-  ble_svc_dis_init();
-  pebble_pairing_service_init();
+  //ble_svc_dis_init();
+  //pebble_pairing_service_init();
+
+  hrinit();
 
   ble_hs_sched_start();
   bool started = xSemaphoreTake(s_host_started,
