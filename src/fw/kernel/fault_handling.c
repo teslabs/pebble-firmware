@@ -52,9 +52,9 @@ static uint32_t s_fault_saved_lr;
 static uint32_t s_fault_saved_pc;
 
 void enable_fault_handlers(void) {
-  NVIC_SetPriority(MemoryManagement_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
-  NVIC_SetPriority(BusFault_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
-  NVIC_SetPriority(UsageFault_IRQn, configMAX_SYSCALL_INTERRUPT_PRIORITY);
+  NVIC_SetPriority(MemoryManagement_IRQn, configLIBRARY_KERNEL_INTERRUPT_PRIORITY);
+  NVIC_SetPriority(BusFault_IRQn, configLIBRARY_KERNEL_INTERRUPT_PRIORITY);
+  NVIC_SetPriority(UsageFault_IRQn, configLIBRARY_KERNEL_INTERRUPT_PRIORITY);
 
   SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
   SCB->SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk;
