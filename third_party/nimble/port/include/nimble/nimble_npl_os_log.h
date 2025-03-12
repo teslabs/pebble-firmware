@@ -21,6 +21,8 @@
 
 #include "system/logging.h"
 
+/* FIXME: logging trashes controller? */
+#ifndef NIMBLE_CFG_CONTROLLER
 // TODO: This doesn't respect log levels and is generally pretty noisy...
 #define BLE_NPL_LOG_IMPL(lvl)                                                        \
   static inline void _BLE_NPL_LOG_CAT(BLE_NPL_LOG_MODULE, _BLE_NPL_LOG_CAT(_, lvl))( \
@@ -30,5 +32,11 @@
     pbl_log_vargs(LOG_LEVEL_INFO, __FILE__, __LINE__, fmt, args);                    \
     va_end(args);                                                                    \
   }
+#else
+#define BLE_NPL_LOG_IMPL(lvl)                                                        \
+  static inline void _BLE_NPL_LOG_CAT(BLE_NPL_LOG_MODULE, _BLE_NPL_LOG_CAT(_, lvl))( \
+      const char *fmt, ...) {                                                        \
+  }
+#endif
 
 #endif /* _NIMBLE_NPL_OS_LOG_H_ */
