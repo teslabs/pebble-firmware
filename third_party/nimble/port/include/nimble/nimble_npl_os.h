@@ -44,6 +44,9 @@
 typedef uint32_t ble_npl_time_t;
 typedef int32_t ble_npl_stime_t;
 
+extern int nrf52_clock_hfxo_request(void);
+extern int nrf52_clock_hfxo_release(void);
+
 struct ble_npl_event {
   bool queued;
   ble_npl_event_fn *fn;
