@@ -151,11 +151,6 @@ void board_early_init(void) {
   nrf_gpio_cfg_output(16);
   nrf_gpio_pin_set(15);
   nrf_gpio_pin_set(16);
-
-  /* TODO: check that LFCLK actually comes up */
-  nrf_clock_event_clear(NRF_CLOCK, NRF_CLOCK_EVENT_LFCLKSTARTED);
-  nrf_clock_int_enable(NRF_CLOCK, NRF_CLOCK_INT_LF_STARTED_MASK);
-  nrf_clock_task_trigger(NRF_CLOCK, NRF_CLOCK_TASK_LFCLKSTART);
 }
 
 void board_init(void) {

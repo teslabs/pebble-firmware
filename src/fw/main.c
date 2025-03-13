@@ -117,6 +117,8 @@
 
 #include <string.h>
 
+#include <nrfx_clock.h>
+
 /* here is as good as anywhere else ... */
 const int __attribute__((used)) uxTopUsedPriority = configMAX_PRIORITIES - 1;
 
@@ -201,6 +203,11 @@ int main(void) {
   dbgserial_init();
   pulse_early_init();
   print_splash_screen();
+
+  nrfx_clock_init(NULL);
+  nrfx_clock_lfclk_start();
+  while (!nrf_clock_lf_is_running(NRF_CLOCK)) {
+  }
 
   rtc_init();
 
