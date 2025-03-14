@@ -33,7 +33,6 @@
 #else
 #define BOARD_NOR_FLASH_SIZE 0x400000
 #endif
-
 #include "flash_region_n25q.h"
 #elif PLATFORM_SILK
 #include "flash_region_mx25u.h"
@@ -43,6 +42,8 @@
 #include "flash_region_mt25q.h"
 #elif PLATFORM_SNOWY || PLATFORM_SPALDING
 #include "flash_region_s29vs.h"
+#elif PLATFORM_SF32LB || PLATFORM_SIFLI
+#include "flash_region_mt25q.h"
 #endif
 
 // NOTE: The following functions are deprecated! New code should use the

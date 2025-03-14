@@ -81,7 +81,9 @@ def options(opt):
                              'robert_bb2',
                              'robert_evt',
                              'robert_es',
-                             'asterix',],
+                             'asterix',
+                             'em_lb525',
+                        ]
                    help='Which board we are targeting '
                         'bb2, snowy_dvt, spalding, silk...')
     opt.add_option('--jtag', action='store', default=None, dest='jtag',  # default is bb2 (below)
@@ -456,6 +458,9 @@ def configure(conf):
     elif conf.is_cutts() or conf.is_robert():
         conf.env.PLATFORM_NAME = 'emery'
         conf.env.MIN_SDK_VERSION = 3
+    elif conf.is_sifli():
+        conf.env.PLATFORM_NAME = 'sf32lb'
+        conf.env.MIN_SDK_VERSION = 3
     else:
         conf.fatal('No platform specified for {}!'.format(conf.options.board))
 
@@ -468,6 +473,8 @@ def configure(conf):
         conf.env.MICRO_FAMILY = 'STM32F4'
     elif conf.is_cutts() or conf.is_robert():
         conf.env.MICRO_FAMILY = 'STM32F7'
+    elif conf.is_sifli():
+        conf.env.MICRO_FAMILY = 'SF32LB'        
     elif conf.is_asterix():
         conf.env.MICRO_FAMILY = 'NRF52840'
     else:
@@ -847,6 +854,8 @@ def size_resources(ctx):
         max_size = 1024 * 1024
     elif ctx.env.MICRO_FAMILY == 'NRF52840':
         max_size = 1024 * 1024
+    elif ctx.env.MICRO_FAMILY == 'SF32LB':
+        max_size = 512 * 1024
     else:
         max_size = 256 * 1024
 
