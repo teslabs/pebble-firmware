@@ -43,6 +43,8 @@
 #include "flash_region_mt25q.h"
 #elif PLATFORM_SNOWY || PLATFORM_SPALDING
 #include "flash_region_s29vs.h"
+#elif PLATFORM_SF32LB || PLATFORM_SIFLI
+#include "flash_region_mt25q.h"
 #endif
 
 // NOTE: The following functions are deprecated! New code should use the

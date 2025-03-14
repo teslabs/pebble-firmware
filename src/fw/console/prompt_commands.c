@@ -429,7 +429,7 @@ static void prv_flash_stress_callback(void *data) {
     PBL_LOG(LOG_LEVEL_ALWAYS, "flash stress test complete");
     return;
   }
-  
+
   int bufsz = rand32() % 1024;
   uint8_t *buf = kernel_malloc(bufsz);
   if (!buf) {
@@ -450,7 +450,7 @@ static void prv_flash_stress_callback(void *data) {
   }
 
   int miscompare = 0;
- 
+
   uint32_t sector_address = flash_get_sector_base_address(flash_addr + bufsz); // the beginning has already been erased, since we are always smaller than a sector
   if (sector_address != s_flash_stress_last_sector) {
     PBL_LOG(LOG_LEVEL_ALWAYS, "flash stress test: erasing flash address %lx", sector_address);
@@ -462,7 +462,7 @@ static void prv_flash_stress_callback(void *data) {
       goto bailout;
     }
   }
-  
+
   uint32_t lfsr_cur = lfsr_seed;
   for (int i = 0; i < bufsz; i++) {
     buf[i] = lfsr_cur & 0xFF;
@@ -470,7 +470,7 @@ static void prv_flash_stress_callback(void *data) {
   }
 
   flash_write_bytes((const uint8_t *)buf, flash_addr, bufsz);
-  
+
   for (int j = 0; j < 8; j++) {
     memset(buf, 0, bufsz);
     flash_read_bytes(buf, flash_addr, bufsz);
@@ -488,7 +488,7 @@ static void prv_flash_stress_callback(void *data) {
       break;
   }
 
-bailout:  
+bailout:
   kernel_free(buf);
 
   if (miscompare) {
@@ -997,7 +997,7 @@ void command_audit_delay_us(void) {
 void command_enter_stop(void) {
   dbgserial_putstr("Entering stop mode indefinitely ... reboot your board to get out!!");
   __disable_irq();
-#if !MICRO_FAMILY_NRF5
+#if !MICRO_FAMILY_NRF5 && !MICRO_FAMILY_SF32LB
   RTC_ITConfig(RTC_IT_WUT, DISABLE);
   RTC_WakeUpCmd(DISABLE);
 #endif
