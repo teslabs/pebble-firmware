@@ -19,6 +19,7 @@
 #include "util/attributes.h"
 #include <bluetooth/pebble_bt.h>
 #include <bluetooth/responsiveness.h>
+#include <comm/ble/gap_le_connection.h>
 
 #define PEBBLE_BT_PAIRING_SERVICE_CONNECTION_STATUS_UUID PEBBLE_BT_UUID_EXPAND(1)
 #define PEBBLE_BT_PAIRING_SERVICE_TRIGGER_PAIRING_UUID PEBBLE_BT_UUID_EXPAND(2)
