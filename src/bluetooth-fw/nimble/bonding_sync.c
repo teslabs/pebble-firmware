@@ -16,6 +16,12 @@
 
 #include <bluetooth/bonding_sync.h>
 
-void bt_driver_handle_host_added_bonding(const BleBonding *bonding) {}
+#include <nimble/ble_store_pebble.h>
 
-void bt_driver_handle_host_removed_bonding(const BleBonding *bonding) {}
+void bt_driver_handle_host_added_bonding(const BleBonding *bonding) {
+    ble_store_pebble_add_bonding(bonding);
+}
+
+void bt_driver_handle_host_removed_bonding(const BleBonding *bonding) {
+    ble_store_pebble_remove_bonding(bonding);
+}
