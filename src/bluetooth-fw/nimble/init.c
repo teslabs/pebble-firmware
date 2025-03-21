@@ -30,6 +30,7 @@
 #include <host/ble_hs_stop.h>
 #include <host/util/util.h>
 #include <nimble/nimble_port.h>
+#include <nimble/ble_store_pebble.h>
 #include <services/dis/ble_svc_dis.h>
 #include <services/gap/ble_svc_gap.h>
 #include <services/gatt/ble_svc_gatt.h>
@@ -37,7 +38,6 @@
 static const uint32_t s_bt_stack_start_stop_timeout_ms = 2000;
 
 extern void pebble_pairing_service_init(void);
-void ble_store_ram_init(void);
 
 #if NIMBLE_CFG_CONTROLLER
 static TaskHandle_t s_ll_task_handle;
@@ -78,7 +78,7 @@ void bt_driver_init(void) {
   s_host_stopped = xSemaphoreCreateBinary();
 
   nimble_port_init();
-  ble_store_ram_init();
+  ble_store_pebble_init();
 
   TaskParameters_t host_task_params = {
       .pvTaskCode = prv_host_task_main,
