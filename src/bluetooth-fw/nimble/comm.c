@@ -23,7 +23,7 @@ static void prv_send_job(void *data) {
 }
 
 bool bt_driver_comm_schedule_send_next_job(CommSession *session) {
-  launcher_task_add_callback(prv_send_job, session);
+  //launcher_task_add_callback(prv_send_job, session);
   return true;  // we croak if a task cannot be scheduled on KernelMain
 }
 

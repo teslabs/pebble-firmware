@@ -17,6 +17,9 @@
 #include "bt_lock.h"
 
 #include "system/passert.h"
+#include "kernel/pebble_tasks.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "portmacro.h"
 
@@ -43,12 +46,18 @@ PebbleRecursiveMutex *bt_lock_get(void) {
 }
 
 void bt_lock(void) {
+  if (xTaskGetCurrentTaskHandle() == pebble_task_get_handle_for_task(PebbleTask_NewTimers)) {
+    PBL_LOG(LOG_LEVEL_ALWAYS, "NTBTLOCK");
+  }
   register uint32_t LR __asm ("lr");
   uint32_t myLR = LR;
   mutex_lock_recursive_with_timeout_and_lr(s_bt_lock, portMAX_DELAY, myLR);
 }
 
 void bt_unlock(void) {
+  if (xTaskGetCurrentTaskHandle() == pebble_task_get_handle_for_task(PebbleTask_NewTimers)) {
+    PBL_LOG(LOG_LEVEL_ALWAYS, "NTBTUNLOCK");
+  }
   mutex_unlock_recursive(s_bt_lock);
 }
 

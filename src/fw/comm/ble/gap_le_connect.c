@@ -282,12 +282,14 @@ static bool prv_update_clients(GAPLEConnectionIntent *intent,
     }
 
     if (client->connected != connected) {
+      /*
       if (client->is_pairing_required &&
           event == GAPLEConnectionEventConnectedNotEncrypted) {
         // If is_pairing_required is true, "connected & not encrypted" is an
         // in-between state that should not be reported to the client.
         continue;
       }
+      */
       // The new state needs to be communicated with this client.
       task_mask &= ~gap_le_pebble_task_bit_for_client(c);
 
@@ -898,6 +900,7 @@ static BTErrno prv_register_intent(struct RegisterIntentRequest *request,
   intent->client[c].is_pairing_required = is_pairing_required;
   intent->client[c].connected = false;  // starting state
 
+  /*
   if (!is_already_connected) {
     return BTErrnoOK;
   }
@@ -916,7 +919,7 @@ static BTErrno prv_register_intent(struct RegisterIntentRequest *request,
     }
     return BTErrnoOK;
   }
-
+  */
   // Notify client of the virtual connection:
   prv_update_clients(intent, HciStatusCode_Success,
                      is_already_encrypted ? GAPLEConnectionEventConnectedAndEncrypted :

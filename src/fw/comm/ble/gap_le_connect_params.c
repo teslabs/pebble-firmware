@@ -209,8 +209,8 @@ static void prv_request_params_update(GAPLEConnection *connection,
 
 retry:
   // Restart watchdog timer:
-  new_timer_start(connection->param_update_info.watchdog_timer, retry_ms,
-                  prv_watchdog_timer_callback, connection, 0);
+  //new_timer_start(connection->param_update_info.watchdog_timer, retry_ms,
+  //                prv_watchdog_timer_callback, connection, 0);
 }
 
 static void prv_watchdog_timer_callback(void *ctx) {

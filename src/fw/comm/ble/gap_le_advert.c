@@ -97,10 +97,6 @@ static GAPLEAdvertisingJob *s_current;
 //! @note This pointer may be dangling, don't try to reference!
 static const BLEAdData *s_current_ad_data;
 
-//! The regular timer that marks the end of a cycle and triggers the next job
-//! to be aired.
-static RegularTimerInfo s_cycle_regular_timer;
-
 static bool s_is_advertising;
 
 //! Cache of the last advertising transmission power in dBm. A cache is kept in
@@ -293,22 +289,6 @@ unlock:
 }
 
 // -----------------------------------------------------------------------------
-//! Timer start / stop utilities
-//! bt_lock is expected to be taken!
-static void prv_timer_start(void) {
-  if (regular_timer_is_scheduled(&s_cycle_regular_timer)) {
-    PBL_LOG(LOG_LEVEL_ERROR, "Advertising timer already started");
-    regular_timer_remove_callback(&s_cycle_regular_timer);
-  }
-
-  regular_timer_add_seconds_callback(&s_cycle_regular_timer);
-}
-
-static void prv_timer_stop(void) {
-  regular_timer_remove_callback(&s_cycle_regular_timer);
-}
-
-// -----------------------------------------------------------------------------
 //! Airs the next advertisement job.
 //! It sends the ad & scan response data to the Bluetooth controller and
 //! enables/disables advertising.
@@ -344,11 +324,6 @@ static void prv_perform_next_job(bool force_refresh) {
   if (s_current) {
     // Clean up old job:
 
-    if (!next) {
-      // No more jobs. Stop timer:
-      prv_timer_stop();
-    }
-
     if (s_is_advertising) {
       // Controller needs to stop advertising before we can start a new job:
       PBL_LOG(GAP_LE_ADVERT_LOG_LEVEL, "Disable last Ad job");
@@ -360,11 +335,6 @@ static void prv_perform_next_job(bool force_refresh) {
 
   if (next) {
     // Set up the next job to be on air:
-
-    if (!s_current) {
-      // No current job, start timer:
-      prv_timer_start();
-    }
 
     if (!prv_is_current_term_silent(next)) {
       const bool enable_scan_resp = (next->payload.scan_resp_data_length > 0);
@@ -613,9 +583,6 @@ void gap_le_advert_init(void) {
     s_jobs = NULL;
     s_current = NULL;
     s_current_ad_data = NULL;
-    s_cycle_regular_timer = (const RegularTimerInfo) {
-      .cb = prv_cycle_timer_callback,
-    };
 
     s_is_advertising = false;
     s_gap_le_advert_is_initialized = true;
@@ -634,8 +601,6 @@ void gap_le_advert_deinit(void) {
       gap_le_advert_unschedule(s_jobs);
     }
 
-    PBL_ASSERTN(!regular_timer_is_scheduled(&s_cycle_regular_timer) ||
-                regular_timer_pending_deletion(&s_cycle_regular_timer));
     s_gap_le_advert_is_initialized = false;
   }
   bt_unlock();
