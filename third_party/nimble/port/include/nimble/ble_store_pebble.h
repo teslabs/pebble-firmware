@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef _NIMBLE_STORE_H_
-#define _NIMBLE_STORE_H_
+#ifndef _BLE_STORE_PEBBLE_H_
+#define _BLE_STORE_PEBBLE_H_
 
-void nimble_store_init(void);
+#include <bluetooth/bonding_sync.h>
+
+void ble_store_pebble_init(void);
+void ble_store_pebble_add_bonding(const BleBonding *bonding);
+void ble_store_pebble_remove_bonding(const BleBonding *bonding);
 
 #endif
