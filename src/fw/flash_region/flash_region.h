@@ -43,7 +43,7 @@
 #include "flash_region_mt25q.h"
 #elif PLATFORM_SNOWY || PLATFORM_SPALDING
 #include "flash_region_s29vs.h"
-#elif PLATFORM_SF32LB || PLATFORM_SIFLI
+#elif PLATFORM_OBELIX
 #include "flash_region_mt25q.h"
 #endif
 

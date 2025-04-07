@@ -44,8 +44,16 @@ def is_asterix(ctx):
     return ctx.get_board().startswith('asterix')
 
 @conf
+<<<<<<< HEAD
 def is_sifli(ctx):
     return ctx.get_board() in ('em_lb525')
+||||||| parent of 2c0bc5b (Rename platform name to obelix)
+def is_sifli(ctx):
+    return ctx.get_board() in ('em_lb525')    
+=======
+def is_obelix(ctx):
+    return ctx.get_board() in ('obelix')    
+>>>>>>> 2c0bc5b (Rename platform name to obelix)
 
 @conf
 def get_platform_name(ctx):
@@ -63,8 +71,8 @@ def get_platform_name(ctx):
         return "robert"
     elif is_asterix(ctx):
         return "asterix"
-    elif is_sifli(ctx):
-        return "sifli"
+    elif is_obelix(ctx):
+        return "obelix"
     else:
         return "unknown"
 
@@ -91,8 +99,8 @@ def get_qemu_machine(ctx):
         return 'pebble-cutts-bb'
     elif is_robert(ctx):
         return 'pebble-robert-bb'
-    elif is_sifli(ctx):
-        return 'pebble-sf32lb'
+    elif is_obelix(ctx):
+        return 'pebble-obelix'
     else:
         return 'unknown'
 
@@ -113,7 +121,7 @@ def get_qemu_cpu(ctx):
         return 'cortex-m4'
     elif is_asterix(ctx):
         return 'cortex-m4'
-    elif is_sifli(ctx):
+    elif is_obelix(ctx):
         return 'cortex-m33'
     else:
         return 'unknown'
@@ -153,7 +161,7 @@ def has_touch(ctx):
         return False
     elif is_asterix(ctx):
         return False
-    elif is_sifli(ctx):
+    elif is_obelix(ctx):
         return False
     else:
         return None
@@ -203,7 +211,7 @@ def add_platform_defines(ctx, env):
         platform = 'ASTERIX'
     elif ctx.is_sifli():
         bit_depth = 8
-        platform = 'SF32LB'
+        platform = 'OBELIX'
     else:
         ctx.fatal('No platform specified for {}!'.format(ctx.options.board))
 
