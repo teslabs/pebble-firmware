@@ -29,8 +29,9 @@
  * reimplement qspi_flash.c, not stm32/qspi.c.  */
 
 #define FLASH_RESET_WORD_VALUE (0xffffffff)
+#define WORD_SIZE 4U
 
-static uint8_t s_qspi_ram_buffer[32];
+static uint8_t __attribute__((aligned(WORD_SIZE))) s_io_bounce_buffer[32];
 
 status_t flash_impl_set_nvram_erase_status(bool is_subsector, FlashAddress addr) {
   return S_SUCCESS;
@@ -316,42 +317,76 @@ void qspi_flash_erase_resume(QSPIFlash *dev, uint32_t addr) {
                QSPI_NO_TIMEOUT);
 }
 
-static void prv_qspi_flash_read_blocking(QSPIFlash *dev, uint32_t addr, void *buffer,
-                                         uint32_t length) {
-  nrfx_err_t err = nrfx_qspi_read(buffer, length, addr);
-  PBL_ASSERTN(err == NRFX_SUCCESS);
-
-  prv_wait_for_completion(dev);
-}
-
 void qspi_flash_read_blocking(QSPIFlash *dev, uint32_t addr, void *buffer, uint32_t length) {
-  uint32_t buf_p = (uint32_t)buffer;
-  if (buf_p & 3) {
-    /* argh ... */
-    uint32_t align_len = 4 - (buf_p & 3);
-    uint32_t tbuf = 0xAAAAAAAA;
-    if (align_len > length) {
-      align_len = length;
-    }
+  uint8_t *bufferp = buffer;
+  uint8_t flash_pre;
+  uint32_t flash_mid;
+  uint8_t flash_suf;
+  uint8_t dst_pre;
+  uint32_t dst_mid;
+  nrfx_err_t res;
 
-    prv_qspi_flash_read_blocking(dev, addr, &tbuf, 4);
-    memcpy(buffer, &tbuf, align_len);
-    length -= align_len;
-    addr += align_len;
-    buffer = ((uint8_t *)buffer) + align_len;
+  // compute flash pre/post boundary and middle bytes
+  //
+  // pre-addr     mid-addr                         suf-addr
+  //    |  addr      |                                |
+  //    |   |________|________ length ________________|__
+  //    |   |        |                                |  |
+  //    N   |       N+4        N+4*2   N+4*M      N+4*(M+1)
+  // ...|[ ][x][x][x]|[x][x][x][x]|......|[x][x][x][x]|[x][ ][ ][ ]|...
+  //        \_______/ \______________________________/ \_/
+  //        flash_pre            flash_mid          flash_suf
+
+  flash_pre = (WORD_SIZE - (addr % WORD_SIZE)) % WORD_SIZE;
+  if (flash_pre > length) {
+    flash_pre = length;
   }
-  uint32_t tail_len = length & 3;
-  length -= tail_len;
-  if (length) {
-    prv_qspi_flash_read_blocking(dev, addr, buffer, length);
-    addr += length;
-    buffer = ((uint8_t *)buffer) + length;
+
+  flash_suf = (length - flash_pre) % WORD_SIZE;
+  flash_mid = length - flash_pre - flash_suf;
+
+  // if RAM buffer is not word-aligned, compute pre-boundary bytes so we can
+  // read them using a word-aligned bounce buffer
+  dst_pre = (WORD_SIZE - (uintptr_t)buffer % WORD_SIZE) % WORD_SIZE;
+  if (dst_pre > length) {
+    dst_pre = length;
   }
-  if (tail_len) {
-    /* argh... */
-    uint32_t tbuf = 0xAAAAAAAA;
-    prv_qspi_flash_read_blocking(dev, addr, &tbuf, 4);
-    memcpy(buffer, &tbuf, tail_len);
+
+  dst_mid = length - dst_pre - (length - dst_pre) % WORD_SIZE;
+
+  // adjust what we can read from flash middle block, if RAM buffer is not word
+  // aligned but flash address is, we could have 2 word blocks less available.
+  if (flash_mid > dst_mid) {
+    flash_mid = dst_mid;
+    flash_suf = length - flash_pre - flash_mid;
+  }
+
+  // read from aligned flash to aligned RAM
+  if (flash_mid != 0U) {
+    res = nrfx_qspi_read(bufferp + dst_pre, flash_mid, addr + flash_pre);
+    prv_wait_for_completion(dev);
+    PBL_ASSERTN(res == NRFX_SUCCESS);
+
+    // perform shift in RAM
+    if (flash_pre != dst_pre) {
+      memmove(bufferp + flash_pre, bufferp + dst_pre, flash_mid);
+    }
+  }
+
+  // read prefix
+  if (flash_pre != 0U) {
+    res = nrfx_qspi_read(s_io_bounce_buffer, WORD_SIZE, addr - (WORD_SIZE - (addr % WORD_SIZE)));
+    prv_wait_for_completion(dev);
+    PBL_ASSERTN(res == NRFX_SUCCESS);
+    memcpy(bufferp, s_io_bounce_buffer + WORD_SIZE - flash_pre, flash_pre);
+  }
+
+  // read suffix
+  if (flash_suf != 0U) {
+    res = nrfx_qspi_read(s_io_bounce_buffer, WORD_SIZE * 2, addr + flash_pre + flash_mid);
+    prv_wait_for_completion(dev);
+    PBL_ASSERTN(res == NRFX_SUCCESS);
+    memcpy(bufferp + flash_pre + flash_mid, s_io_bounce_buffer, flash_suf);
   }
 }
 
@@ -376,10 +411,10 @@ int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t add
      * writing to QSPI flash from internal flash, it is during
      * initialization and should be pretty infrequent
      */
-    bytes_in_page = MIN(bytes_in_page, sizeof(s_qspi_ram_buffer));
-    memcpy(s_qspi_ram_buffer, buffer, bytes_in_page);
-    buffer = s_qspi_ram_buffer;
-    /* s_qspi_ram_buffer does not get overwritten because nobody will call
+    bytes_in_page = MIN(bytes_in_page, sizeof(s_io_bounce_buffer));
+    memcpy(s_io_bounce_buffer, buffer, bytes_in_page);
+    buffer = s_io_bounce_buffer;
+    /* s_io_bounce_buffer does not get overwritten because nobody will call
      * us again until qspi_flash_get_write_status completes
      */
   }
