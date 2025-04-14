@@ -216,8 +216,6 @@ void qspi_flash_init(QSPIFlash *dev, QSPIFlashPart *part, bool coredump_mode) {
       break;
   }
 
-  config.prot_if.addrmode = NRF_QSPI_ADDRMODE_24BIT;
-
   nrfx_err_t err;
   if (was_init) {
     nrfx_qspi_uninit();
