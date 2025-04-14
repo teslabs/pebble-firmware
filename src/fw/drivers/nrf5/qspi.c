@@ -86,11 +86,16 @@ static bool prv_poll_bit(QSPIPort *dev, uint8_t instruction, uint8_t bit_mask, b
   return true;
 }
 
-static void prv_write_enable(QSPIFlash *dev) {
-  prv_write_cmd_no_addr(dev->qspi, dev->state->part->instructions.write_enable);
-  // wait for writing to be enabled
-  prv_poll_bit(dev->qspi, dev->state->part->instructions.rdsr1,
-               dev->state->part->status_bit_masks.write_enable, true /* set */, QSPI_NO_TIMEOUT);
+static void prv_write_protection_set(QSPIFlash *dev, bool enabled) {
+  uint8_t cmd;
+
+  if (enabled) {
+    cmd = dev->state->part->instructions.write_disable;
+  } else {
+    cmd = dev->state->part->instructions.write_enable;
+  }
+
+  prv_write_cmd_no_addr(dev->qspi, cmd);
 }
 
 static bool prv_check_whoami(QSPIFlash *dev) {
@@ -261,7 +266,7 @@ status_t qspi_flash_is_erase_complete(QSPIFlash *dev) {
 }
 
 status_t qspi_flash_erase_begin(QSPIFlash *dev, uint32_t addr, bool is_subsector) {
-  prv_write_enable(dev);
+  prv_write_protection_set(dev, false);
 
   nrfx_err_t err =
       nrfx_qspi_erase(is_subsector ? NRF_QSPI_ERASE_LEN_4KB : NRF_QSPI_ERASE_LEN_64KB, addr);
@@ -276,6 +281,8 @@ status_t qspi_flash_erase_begin(QSPIFlash *dev, uint32_t addr, bool is_subsector
   const bool result =
       prv_poll_bit(dev->qspi, dev->state->part->instructions.rdsr1,
                    dev->state->part->status_bit_masks.busy, true /* set */, busy_timeout_us);
+
+  prv_write_protection_set(dev, true);
 
   return result ? S_SUCCESS : E_ERROR;
 }
@@ -351,8 +358,6 @@ static void prv_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t ad
                                  uint32_t length) {
   PBL_ASSERTN(length > 0);
 
-  prv_write_enable(dev);
-
   nrfx_err_t err = nrfx_qspi_write(buffer, length, addr);
   PBL_ASSERTN(err == NRFX_SUCCESS);
 
@@ -382,7 +387,7 @@ int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t add
 
   length = bytes_in_page;
 
-  prv_write_enable(dev);
+  prv_write_protection_set(dev, false);
 
   uint32_t buf_p = (uint32_t)buffer;
   if (buf_p & 3) {
@@ -413,6 +418,8 @@ int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t add
     memcpy(&tbuf, buffer, tail_len);
     prv_write_page_begin(dev, &tbuf, addr, 4);
   }
+
+  prv_write_protection_set(dev, true);
 
   return bytes_in_page;
 }
