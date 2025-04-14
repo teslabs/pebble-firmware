@@ -359,9 +359,6 @@ static void prv_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t ad
   if (!dev->state->coredump_mode) {
     xSemaphoreTake(dev->qspi->state->dma_semaphore, portMAX_DELAY);
   }
-
-  prv_poll_bit(dev->qspi, dev->state->part->instructions.rdsr1,
-               dev->state->part->status_bit_masks.busy, false /* !set */, QSPI_NO_TIMEOUT);
 }
 
 int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t addr,
@@ -401,8 +398,6 @@ int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t add
     length -= align_len;
     addr += align_len;
     buffer = ((uint8_t *)buffer) + align_len;
-
-    while (nrfx_qspi_mem_busy_check() != NRFX_SUCCESS) delay_us(10);
   }
 
   uint32_t tail_len = length & 3;
@@ -414,9 +409,6 @@ int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t add
   }
 
   if (tail_len) {
-    /* argh... */
-    while (nrfx_qspi_mem_busy_check() != NRFX_SUCCESS) delay_us(10);
-
     uint32_t tbuf = 0xFFFFFFFF;
     memcpy(&tbuf, buffer, tail_len);
     prv_write_page_begin(dev, &tbuf, addr, 4);
