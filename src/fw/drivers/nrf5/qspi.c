@@ -31,7 +31,8 @@
 #define FLASH_RESET_WORD_VALUE (0xffffffff)
 #define WORD_SIZE 4U
 
-static uint8_t s_qspi_ram_buffer[32];
+static uint8_t __attribute__((aligned(WORD_SIZE))) s_io_bounce_buffer[32];
+static uint8_t __attribute__((aligned(WORD_SIZE))) s_flash_bounce_buffer[32];
 
 status_t flash_impl_set_nvram_erase_status(bool is_subsector, FlashAddress addr) {
   return S_SUCCESS;
@@ -122,9 +123,7 @@ static bool prv_check_whoami(QSPIFlash *dev) {
   }
 }
 
-bool qspi_flash_check_whoami(QSPIFlash *dev) {
-  return prv_check_whoami(dev);
-}
+bool qspi_flash_check_whoami(QSPIFlash *dev) { return prv_check_whoami(dev); }
 
 bool qspi_flash_is_in_coredump_mode(QSPIFlash *dev) { return dev->state->coredump_mode; }
 
@@ -376,72 +375,128 @@ void qspi_flash_read_blocking(QSPIFlash *dev, uint32_t addr, void *buffer, uint3
   }
 }
 
-static void prv_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t addr,
-                                 uint32_t length) {
-  PBL_ASSERTN(length > 0);
+static int prv_flash_write_unaligned(QSPIFlash *dev, const void *buffer, uint32_t addr,
+                                     uint32_t length) {
+  const uint8_t *bufferp = buffer;
+  uint8_t flash_pre;
+  uint32_t flash_mid;
+  uint8_t flash_suf;
+  nrfx_err_t res;
 
-  nrfx_err_t err = nrfx_qspi_write(buffer, length, addr);
-  PBL_ASSERTN(err == NRFX_SUCCESS);
+  // compute flash pre/post boundary and middle bytes
+  flash_pre = (WORD_SIZE - (addr % WORD_SIZE)) % WORD_SIZE;
+  if (flash_pre > length) {
+    flash_pre = length;
+  }
 
-  prv_wait_for_completion(dev);
+  flash_suf = (length - flash_pre) % WORD_SIZE;
+  flash_mid = length - flash_pre - flash_suf;
+
+  // write words from RAM to aligned flash
+  if (flash_mid != 0U) {
+    if (!nrfx_is_word_aligned(bufferp + flash_pre)) {
+      // If middle words are not aligned, we need to copy them to a bounce buffer
+      const uint8_t *curr_bufferp = bufferp + flash_pre;
+      uint32_t curr_addr = addr + flash_pre;
+      uint32_t remaining = flash_mid;
+
+      while (remaining > 0U) {
+        uint32_t chunk_length = MIN(remaining, sizeof(s_io_bounce_buffer));
+
+        memcpy(s_io_bounce_buffer, curr_bufferp, chunk_length);
+
+        res = nrfx_qspi_write(s_io_bounce_buffer, chunk_length, curr_addr);
+        prv_wait_for_completion(dev);
+        if (res != NRFX_SUCCESS) {
+          return E_ERROR;
+        }
+
+        remaining -= chunk_length;
+        curr_bufferp += chunk_length;
+        curr_addr += chunk_length;
+      }
+    } else {
+      res = nrfx_qspi_write(bufferp + flash_pre, flash_mid, addr + flash_pre);
+      prv_wait_for_completion(dev);
+      if (res != NRFX_SUCCESS) {
+        return E_ERROR;
+      }
+    }
+  }
+
+  // write prefix (sub-word)
+  if (flash_pre != 0U) {
+    res = nrfx_qspi_read(s_io_bounce_buffer, WORD_SIZE, addr - (addr % WORD_SIZE));
+    prv_wait_for_completion(dev);
+    if (res != NRFX_SUCCESS) {
+      return E_ERROR;
+    }
+
+    memcpy(s_io_bounce_buffer + WORD_SIZE - flash_pre, bufferp, flash_pre);
+
+    res = nrfx_qspi_write(s_io_bounce_buffer, WORD_SIZE, addr - (addr % WORD_SIZE));
+    prv_wait_for_completion(dev);
+    if (res != NRFX_SUCCESS) {
+      return E_ERROR;
+    }
+  }
+
+  // write suffix (sub-word)
+  if (flash_suf != 0U) {
+    res = nrfx_qspi_read(s_io_bounce_buffer, WORD_SIZE, addr + flash_pre + flash_mid);
+    prv_wait_for_completion(dev);
+    if (res != NRFX_SUCCESS) {
+      return E_ERROR;
+    }
+
+    memcpy(s_io_bounce_buffer, bufferp + flash_pre + flash_mid, flash_suf);
+
+    res = nrfx_qspi_write(s_io_bounce_buffer, WORD_SIZE, addr + flash_pre + flash_mid);
+    prv_wait_for_completion(dev);
+    if (res != NRFX_SUCCESS) {
+      return E_ERROR;
+    }
+  }
+
+  return (int)length;
 }
 
 int qspi_flash_write_page_begin(QSPIFlash *dev, const void *buffer, uint32_t addr,
                                 uint32_t length) {
-  const uint32_t offset_in_page = addr % PAGE_SIZE_BYTES;
-  uint32_t bytes_in_page = MIN(PAGE_SIZE_BYTES - offset_in_page, length);
-
-  if (!nrfx_is_in_ram(buffer)) {
-    /* we cannot DMA from non-RAM, so bounce through a RAM buffer if we have
-     * to; this is not performant but it is ok because any time we are
-     * writing to QSPI flash from internal flash, it is during
-     * initialization and should be pretty infrequent
-     */
-    bytes_in_page = MIN(bytes_in_page, sizeof(s_qspi_ram_buffer));
-    memcpy(s_qspi_ram_buffer, buffer, bytes_in_page);
-    buffer = s_qspi_ram_buffer;
-    /* s_qspi_ram_buffer does not get overwritten because nobody will call
-     * us again until qspi_flash_get_write_status completes
-     */
-  }
-
-  length = bytes_in_page;
+  int ret;
 
   prv_write_protection_set(dev, false);
 
-  uint32_t buf_p = (uint32_t)buffer;
-  if (buf_p & 3) {
-    /* argh ... */
-    uint32_t align_len = 4 - (buf_p & 3);
-    uint32_t tbuf = 0xFFFFFFFF;
-    if (align_len > length) {
-      align_len = length;
+  if (!nrfx_is_in_ram(buffer)) {
+    // If buffer is not in RAM, use a bounce buffer
+    ret = S_SUCCESS;
+    const uint8_t *curr_buffer = buffer;
+    uint32_t curr_addr = addr;
+    uint32_t remaining = length;
+
+    while ((remaining > 0U) && (ret == S_SUCCESS)) {
+      uint32_t chunk_length = MIN(remaining, sizeof(s_flash_bounce_buffer));
+
+      memcpy(s_flash_bounce_buffer, curr_buffer, chunk_length);
+      ret = prv_flash_write_unaligned(dev, s_flash_bounce_buffer, curr_addr, chunk_length);
+
+      if (ret != E_ERROR) {
+        remaining -= chunk_length;
+        curr_buffer += chunk_length;
+        curr_addr += chunk_length;
+      }
     }
 
-    memcpy(&tbuf, buffer, align_len);
-    prv_write_page_begin(dev, &tbuf, addr, 4);
-    length -= align_len;
-    addr += align_len;
-    buffer = ((uint8_t *)buffer) + align_len;
-  }
-
-  uint32_t tail_len = length & 3;
-  length -= tail_len;
-  if (length) {
-    prv_write_page_begin(dev, buffer, addr, length);
-    addr += length;
-    buffer = ((uint8_t *)buffer) + length;
-  }
-
-  if (tail_len) {
-    uint32_t tbuf = 0xFFFFFFFF;
-    memcpy(&tbuf, buffer, tail_len);
-    prv_write_page_begin(dev, &tbuf, addr, 4);
+    if (ret != E_ERROR) {
+      ret = (int)length;
+    }
+  } else {
+    ret = prv_flash_write_unaligned(dev, buffer, addr, length);
   }
 
   prv_write_protection_set(dev, true);
 
-  return bytes_in_page;
+  return ret;
 }
 
 status_t qspi_flash_get_write_status(QSPIFlash *dev) {
