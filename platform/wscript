@@ -44,16 +44,8 @@ def is_asterix(ctx):
     return ctx.get_board().startswith('asterix')
 
 @conf
-<<<<<<< HEAD
-def is_sifli(ctx):
-    return ctx.get_board() in ('em_lb525')
-||||||| parent of 2c0bc5b (Rename platform name to obelix)
-def is_sifli(ctx):
-    return ctx.get_board() in ('em_lb525')    
-=======
 def is_obelix(ctx):
     return ctx.get_board() in ('obelix')    
->>>>>>> 2c0bc5b (Rename platform name to obelix)
 
 @conf
 def get_platform_name(ctx):
@@ -209,7 +201,7 @@ def add_platform_defines(ctx, env):
     elif ctx.is_asterix():
         bit_depth = 1
         platform = 'ASTERIX'
-    elif ctx.is_sifli():
+    elif ctx.is_obelix():
         bit_depth = 8
         platform = 'OBELIX'
     else:

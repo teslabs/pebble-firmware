@@ -11,6 +11,10 @@
 void battery_init(void) {
 }
 
+bool battery_is_present(void) {
+  return true;
+}
+
 int battery_get_millivolts(void) {
   return 4000;
 }
